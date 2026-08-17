@@ -49,7 +49,10 @@ class CloudRunDeployerSubAgent(BaseADKAgent):
         logger.info(f"[{self.name}] Initiating live Cloud Run deployment for commit {commit} with image {image}")
         
         specs = self.parse_agent_md(agent_md_content)
-        service_name = specs.get("service_name", "student-registration-app")
+        base_service_name = specs.get("service_name", "student-registration-app")
+        # Extract tag from image name (e.g. repo/image:tag -> tag) and append to service name
+        tag = image.split(":")[-1] if ":" in image else "latest"
+        service_name = f"{base_service_name}-{tag}"
         cpu = specs.get("cpu", "1000m")
         memory = specs.get("memory", "512Mi")
         concurrency = specs.get("concurrency", 80)
