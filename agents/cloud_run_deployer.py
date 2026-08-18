@@ -91,6 +91,20 @@ class CloudRunDeployerSubAgent(BaseADKAgent):
             logger.info(f"[{self.name}] Command output stderr: {cmd_result.stderr.strip()}")
             if cmd_result.returncode == 0 and cmd_result.stdout.strip():
                 service_url = cmd_result.stdout.strip()
+                
+                # Cleanup old instances
+                logger.info(f"[{self.name}] Cleaning up old instances for base service name: {base_service_name}")
+                list_cmd = f'gcloud run services list --project {settings.gcp_project_id} --region {settings.gcp_region} --format="value(metadata.name)"'
+                list_res = subprocess.run(list_cmd, shell=True, capture_output=True, text=True)
+                if list_res.returncode == 0:
+                    for old_service in list_res.stdout.splitlines():
+                        old_service = old_service.strip()
+                        # Only delete services starting with the base_service_name but not the current one
+                        if old_service.startswith(base_service_name) and old_service != service_name:
+                            logger.info(f"[{self.name}] Deleting old service: {old_service}")
+                            del_cmd = f"gcloud run services delete {old_service} --project {settings.gcp_project_id} --region {settings.gcp_region} --quiet"
+                            subprocess.run(del_cmd, shell=True, capture_output=True)
+                            
             else:
                 service_url = f"https://{service_name}-134803401075.us-central1.run.app"
         except Exception as e:
