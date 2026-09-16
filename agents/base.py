@@ -8,7 +8,7 @@ logger = logging.getLogger("adk-agents")
 logging.basicConfig(level=logging.INFO)
 
 class AgentSettings(BaseSettings):
-    gcp_project_id: str = os.getenv("GCP_PROJECT_ID", "amittechnet-0626")
+    gcp_project_id: str = os.getenv("GCP_PROJECT_ID", "techarchitect75")
     gcp_region: str = os.getenv("GCP_REGION", "us-central1")
     gar_repository: str = os.getenv("GAR_REPOSITORY", "cybage-devops-repo")
     gcs_bucket_name: str = os.getenv("GCS_BUCKET_NAME", "cybage-devops-deployment-artifacts")
